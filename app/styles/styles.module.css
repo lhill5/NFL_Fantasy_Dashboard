@@ -28,3 +28,7 @@
   height: 300px;
   overflow: scroll;
 }
+
+.column-header::selection {
+  color: red;
+}

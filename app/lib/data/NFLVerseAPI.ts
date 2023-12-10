@@ -1,5 +1,8 @@
+import { supabase } from "../database/connector";
+
 import { iRoster } from "../types/databaseTypes";
 import { iPlayerStats } from "../types/databaseTypes";
+import { GET, POST, buildQuery, addFilterQuery } from "./dbAPI";
 
 export async function PY_GET_PlayerStats() {
   try {
@@ -31,4 +34,46 @@ export async function PY_GET_Roster() {
     console.log(error);
     throw error;
   }
+}
+
+export async function getRoster(
+  filterObj: { [key: string]: string | number } = {}
+) {
+  const query = buildQuery("Roster", filterObj);
+  const res = await GET(query);
+  return res;
+}
+
+export async function updateRoster() {
+  try {
+    const roster: any = await PY_GET_Roster();
+    const res = await POST("Roster", roster);
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getOffensivePlayerStats(
+  filterObj: { [key: string]: string | number } = {}
+) {
+  const query = buildQuery("Player_Stats_Offense", filterObj);
+  const data = await GET(query);
+  return data;
+}
+
+export async function getOffensiveStats_Join_Roster(
+  filterObj: { [key: string]: string | number } = {}
+) {
+  const query = supabase.from("Player_Stats_Offense").select(`
+  *, 
+  Roster ( team, position, jersey_number, headshot_url )
+`);
+
+  const filterQuery = addFilterQuery(query, filterObj);
+  const res = await filterQuery;
+
+  const { data, error }: { data: iPlayerStats[]; error: any } = res as any;
+  if (error) throw error;
+
+  return data;
 }

@@ -6,11 +6,11 @@ import Autocomplete from "@mui/material/Autocomplete";
 export default function DropdownSlicer({
   className,
   options,
-  updateTeam,
+  updateItem,
 }: {
   className: string;
   options: Array<string>;
-  updateTeam: (team: string | null) => void;
+  updateItem: (item: string | null) => void;
 }) {
   return (
     <Autocomplete
@@ -20,8 +20,8 @@ export default function DropdownSlicer({
       options={options}
       sx={{ width: 300 }}
       renderInput={(params) => <TextField {...params} label="Team" />}
-      onChange={(event: any, newTeam: string | null) => {
-        updateTeam(newTeam);
+      onChange={(event: any, newItem: string | null) => {
+        updateItem(newItem);
       }}
     />
   );

@@ -1,10 +1,12 @@
-import { getOffensiveStats_Join_Roster, updateRoster } from "../lib/data/dbAPI";
+import {
+  getOffensiveStats_Join_Roster,
+  updateRoster,
+} from "../lib/data/NFLVerseAPI";
 import groupAndSum from "@/app/lib/utils/helper";
 import ClientPage from "./components/ClientPage";
-import { getSchedule, updateSchedule } from "../lib/data/SportsIOAPI";
 
-async function fetchData(team: string) {
-  const res = await getOffensiveStats_Join_Roster({ position: "RB" });
+async function fetchData(position: string) {
+  const res = await getOffensiveStats_Join_Roster({ position: position });
   const data = groupAndSum(res, ["player_id", "season"]);
   // getSchedule("2023");
   return data;
@@ -18,7 +20,10 @@ export default async function Page({
   searchParams: { [key: string]: string };
 }) {
   const team: string = "team" in searchParams ? searchParams.team : "TB";
-  const playerStats = await fetchData(team);
+  const position: string =
+    "position" in searchParams ? searchParams.position : "QB";
+
+  const playerStats = await fetchData(position);
   return (
     <div className="w-screen h-screen">
       <ClientPage playerStats={playerStats}></ClientPage>

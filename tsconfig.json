@@ -28,7 +28,7 @@
     "**/*.tsx",
     "**/*.jsx",
     ".next/types/**/*.ts",
-    "app/teams/components/CustomTable.jsx"
+    "app/components/CustomTable.jsx"
   ],
   "exclude": ["node_modules"]
 }

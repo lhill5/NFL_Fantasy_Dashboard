@@ -53,6 +53,7 @@ export interface iPlayerStats {
   fantasy_points: number;
   fantasy_points_ppr: number;
   Roster: { [key: string]: any };
+
   [key: string]: any;
 }
 
@@ -79,10 +80,46 @@ export interface iRoster {
   rookie_year: number;
   draft_club: string;
   draft_number: number;
+
   [key: string]: any;
 }
 
 export interface RosterColumn {
   key: string;
   value: string;
+}
+
+export interface iSchedule {
+  id: number;
+  type: string;
+  stage: string;
+  season: string;
+  week: string;
+  date: string;
+  status: string;
+
+  home_team: string;
+  home_team_id: number;
+  home_team_logo: string;
+  home_score_q1: number;
+  home_score_q2: number;
+  home_score_q3: number;
+  home_score_q4: number;
+  home_score_overtime: number;
+  home_score_total: number;
+
+  away_team: string;
+  away_team_id: number;
+  away_team_logo: string;
+  away_score_q1: number;
+  away_score_q2: number;
+  away_score_q3: number;
+  away_score_q4: number;
+  away_score_overtime: number;
+  away_score_total: number;
+
+  venue_name: string;
+  venue_city: string;
+
+  [key: string]: any;
 }

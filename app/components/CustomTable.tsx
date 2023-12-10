@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
+import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
@@ -14,6 +14,8 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import Box from "@mui/material/Box";
 import { visuallyHidden } from "@mui/utils";
 import { T, HeadCell } from "@/app/lib/types/genericTypes";
+import { styled } from "@mui/material/styles";
+import { css } from "@emotion/css";
 import styles from "../styles.module.css";
 
 type Order = "asc" | "desc";
@@ -47,6 +49,35 @@ interface EnhancedTableProps {
   headCells: HeadCell[];
 }
 
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.MuiTableCell-head`]: {
+    backgroundColor: "#191919",
+    color: "#ffffff !important",
+  },
+  [`&.MuiTableCell-body`]: {
+    fontSize: 14,
+    color: "#ffffff",
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  // when user hovers over a table body's row, highlight row
+  "&.MuiTableRow-root:hover": {
+    backgroundColor: "#565656",
+  },
+
+  "&:nth-of-type(even)": {
+    backgroundColor: "#232323",
+  },
+  "&:nth-of-type(odd)": {
+    backgroundColor: "#454545",
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));
+
 function EnhancedTableHead(props: EnhancedTableProps) {
   const { order, orderBy, onRequestSort } = props;
   const createSortHandler =
@@ -57,19 +88,33 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   return (
     <TableHead>
       <TableRow>
-        <TableCell>Headshot</TableCell>
+        {0 ? <StyledTableCell>Headshot</StyledTableCell> : null}
         {props.headCells.map((headCell) => (
-          <TableCell
-            className="w-60"
+          <StyledTableCell
             key={headCell.id}
-            align={headCell.numeric ? "right" : "left"}
-            padding={headCell.disablePadding ? "none" : "normal"}
+            align="justify"
+            padding={"none"}
             sortDirection={orderBy === headCell.id ? order : false}
+            style={{ minWidth: headCell.width }}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
+              sx={[
+                { color: "#ffffff !important" },
+                (theme) => ({
+                  "&:hover": {
+                    color: "#d3d3d3",
+                  },
+                  "&:focus": {
+                    color: "#d3d3d3",
+                  },
+                  "&:active": {
+                    color: "#d3d3d3",
+                  },
+                }),
+              ]}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
@@ -78,7 +123,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                 </Box>
               ) : null}
             </TableSortLabel>
-          </TableCell>
+          </StyledTableCell>
         ))}
       </TableRow>
     </TableHead>
@@ -88,11 +133,13 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 const EnhancedTable: React.FC<{
   data: T[];
   headCells: HeadCell[];
+  sortBy: string;
+  sortByDirection: Order;
   parentHeight: number;
-}> = ({ data, headCells, parentHeight }) => {
+}> = ({ data, headCells, sortBy, sortByDirection, parentHeight }) => {
   const [page, setPage] = React.useState(0);
-  const [order, setOrder] = React.useState<Order>("asc");
-  const [orderBy, setOrderBy] = React.useState<keyof T>("calories");
+  const [order, setOrder] = React.useState<Order>(sortByDirection);
+  const [orderBy, setOrderBy] = React.useState<keyof T>(sortBy);
   const [rowsPerPage, setRowsPerPage] = React.useState(data.length);
 
   const handleRequestSort = (
@@ -119,42 +166,44 @@ const EnhancedTable: React.FC<{
         height: "100%",
         overflow: "scroll",
       }}
-      className="border-2 border-blue-800"
     >
       <Paper>
-        <TableContainer sx={{ maxHeight: parentHeight * 0.35 }}>
+        <TableContainer sx={{ maxHeight: parentHeight * 0.53 }}>
           <Table stickyHeader aria-label="sticky table" id="player_table">
             <EnhancedTableHead
               order={order}
               orderBy={orderBy.toString()}
               onRequestSort={handleRequestSort}
               headCells={headCells}
-            />
-            <TableBody className={styles["td"]}>
+            ></EnhancedTableHead>
+            <TableBody>
               {visibleRows.map((row, index) => {
                 return (
-                  <TableRow hover key={row.id} sx={{ cursor: "pointer" }}>
-                    <TableCell className="">
-                      <img
-                        src={row.Roster["headshot_url"]}
-                        className="w-16 h-auto"
-                      ></img>
-                    </TableCell>
+                  <StyledTableRow hover key={row.id} sx={{ cursor: "pointer" }}>
+                    {/* show player's headshot if in dataset (for displaying roster / player stats) */}
+                    {"Roster" in row ? (
+                      <StyledTableCell className="p-0 pb-1">
+                        <img
+                          src={row.Roster["headshot_url"]}
+                          className="w-14 h-auto"
+                        ></img>
+                      </StyledTableCell>
+                    ) : null}
                     {headCells.map((headCell) => (
-                      <TableCell
+                      <StyledTableCell
                         className=""
                         component="th"
                         scope="row"
-                        padding="normal"
-                        align={headCell.id === "full_name" ? "left" : "right"}
+                        padding="none"
+                        align="justify"
                         key={headCell.id} // Adding a key to the TableCell
                       >
                         {typeof row[headCell.id] === "number"
                           ? parseFloat(row[headCell.id].toFixed(2))
                           : row[headCell.id]}
-                      </TableCell>
+                      </StyledTableCell>
                     ))}
-                  </TableRow>
+                  </StyledTableRow>
                 );
               })}
             </TableBody>

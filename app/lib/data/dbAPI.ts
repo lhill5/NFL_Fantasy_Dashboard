@@ -4,47 +4,9 @@ import { supabase } from "../database/connector";
 import { iPlayerStats, iRoster } from "../types/databaseTypes";
 import { PY_GET_Roster } from "./NFLVerseAPI";
 
-export async function getOffensivePlayerStats(
-  filterObj: { [key: string]: string | number } = {}
-) {
-  const query = buildQuery("Player_Stats_Offense", filterObj);
-  const data = await GET(query);
-  return data;
-}
-
-export async function getOffensiveStats_Join_Roster(
-  filterObj: { [key: string]: string | number } = {}
-) {
-  const query = supabase.from("Player_Stats_Offense").select(`
-  *, 
-  Roster ( team, position, jersey_number, headshot_url )
-`);
-
-  const filterQuery = addFilterQuery(query, filterObj);
-  const res = await filterQuery;
-
-  const { data, error }: { data: iPlayerStats[]; error: any } = res as any;
-  if (error) throw error;
-
-  return data;
-}
-
-export async function getRoster(
-  filterObj: { [key: string]: string | number } = {}
-) {
-  const query = buildQuery("Roster", filterObj);
-  const res = await GET(query);
-  return res;
-}
-
-export async function updateRoster() {
-  const roster: any = await PY_GET_Roster();
-  const res = await POST("Roster", roster);
-}
-
 // ----------- HELPER FUNCTIONS -------------------- //
 
-async function buildQuery(
+export async function buildQuery(
   tableName: string,
   filterObj: { [key: string]: string | number } = {}
 ) {
@@ -56,7 +18,7 @@ async function buildQuery(
   }
 }
 
-async function addFilterQuery(
+export async function addFilterQuery(
   query: PostgrestFilterBuilder<any, any, any[], unknown>,
   filterObj: { [key: string]: string | number } = {}
 ) {

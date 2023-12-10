@@ -1,5 +1,6 @@
 import Image from "next/image";
+import LeftNavBar from "./components/LeftNavBar";
 
 export default function Home() {
-  return <div>Hello World</div>;
+  return <LeftNavBar className="col-span-1"></LeftNavBar>;
 }

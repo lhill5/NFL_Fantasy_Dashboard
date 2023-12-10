@@ -39,4 +39,5 @@ api/env
 
 .vscode
 .venv
+env
 ideas.txt
