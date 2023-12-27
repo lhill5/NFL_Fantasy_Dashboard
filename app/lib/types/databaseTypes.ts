@@ -89,7 +89,7 @@ export interface RosterColumn {
   value: string;
 }
 
-export interface iSchedule {
+export interface iGame {
   id: number;
   type: string;
   stage: string;
@@ -123,3 +123,5 @@ export interface iSchedule {
 
   [key: string]: any;
 }
+
+export type iTeamRecords = { [key: string]: { [key: string]: number } };

@@ -1,0 +1,14 @@
+.container {
+  background-color: var(--foreground-hex);
+  color: #ededed;
+  border-radius: 10px;
+  height: 616px;
+}
+
+.even-rows {
+  background-color: var(--foreground-hex);
+}
+
+.odd-rows {
+  background-color: var(--secondary-hex);
+}

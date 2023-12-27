@@ -10,6 +10,12 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+
+  /* --background-hex: #262734;
+  --foreground-hex: #323446; */
+  --background-hex: #222831;
+  --foreground-hex: #393e46;
+  --secondary-hex: #4d5159;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -21,11 +27,11 @@
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
+  /* color: rgb(var(--foreground-rgb));
   background: linear-gradient(
       to bottom,
       transparent,
       rgb(var(--background-end-rgb))
     )
-    rgb(var(--background-start-rgb));
+    rgb(var(--background-start-rgb)); */
 }

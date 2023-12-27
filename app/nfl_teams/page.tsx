@@ -2,15 +2,24 @@ import {
   getOffensiveStats_Join_Roster,
   updateRoster,
 } from "../lib/data/NFLVerseAPI";
-import groupAndSum from "@/app/lib/utils/helper";
+import { groupAndSum } from "@/app/lib/utils/helper";
 import ClientPage from "./components/ClientPage";
+import { T } from "../lib/types/genericTypes";
 
-async function fetchData(position: string) {
-  const res = await getOffensiveStats_Join_Roster({ position: position });
+async function fetchData(position: string | null = null) {
+  const res: T[] = await getOffensiveStats_Join_Roster({
+    ...(position !== "" && {
+      position: { value: position, filterType: "eq" },
+    }),
+  });
   const data = groupAndSum(res, ["player_id", "season"]);
-  // getSchedule("2023");
   return data;
 }
+
+// async function fetchTeamRecords() {
+//   let data = await GET_Team_Records();
+//   return data;
+// }
 
 export default async function Page({
   params,
@@ -19,11 +28,23 @@ export default async function Page({
   params: { slug: string };
   searchParams: { [key: string]: string };
 }) {
-  const team: string = "team" in searchParams ? searchParams.team : "TB";
+  const season: string =
+    "season" in searchParams ? searchParams.season : "2023";
+  const week: string = searchParams.week;
+  const team: string = searchParams.team;
+
+  const stats = await fetchData();
+
+  const season_list = [
+    ...new Set(stats.map((obj: { season: any }) => obj.season)),
+  ];
+
   const position: string =
     "position" in searchParams ? searchParams.position : "QB";
 
   const playerStats = await fetchData(position);
+  console.log(playerStats);
+
   return (
     <div className="w-screen h-screen">
       <ClientPage playerStats={playerStats}></ClientPage>

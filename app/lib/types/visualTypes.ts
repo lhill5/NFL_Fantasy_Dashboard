@@ -1,4 +1,4 @@
-import { iPlayerStats, iRoster, iSchedule } from "./databaseTypes";
+import { iPlayerStats, iRoster, iGame } from "./databaseTypes";
 
 export interface RosterHeadCell {
   disablePadding: boolean;
@@ -11,14 +11,6 @@ export interface RosterHeadCell {
 export interface PlayerStatsHeadCell {
   disablePadding: boolean;
   id: keyof iPlayerStats;
-  label: string;
-  numeric: boolean;
-  width: number;
-}
-
-export interface ScheduleHeadCell {
-  disablePadding: boolean;
-  id: keyof iSchedule;
   label: string;
   numeric: boolean;
   width: number;

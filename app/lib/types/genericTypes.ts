@@ -1,9 +1,9 @@
-import { iRoster, iPlayerStats, iSchedule } from "./databaseTypes";
-import {
-  RosterHeadCell,
-  PlayerStatsHeadCell,
-  ScheduleHeadCell,
-} from "./visualTypes";
+import { iRoster, iPlayerStats, iGame } from "./databaseTypes";
+import { RosterHeadCell, PlayerStatsHeadCell } from "./visualTypes";
 
-export type T = iRoster | iPlayerStats | iSchedule;
-export type HeadCell = RosterHeadCell | PlayerStatsHeadCell | ScheduleHeadCell;
+export type T = iRoster | iPlayerStats | iGame;
+export type HeadCell = RosterHeadCell | PlayerStatsHeadCell;
+
+export type filterType = {
+  [key: string]: { [key: string]: string | number | null };
+};

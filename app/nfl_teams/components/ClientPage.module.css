@@ -1,0 +1,12 @@
+.client-header {
+  height: calc(100% - 5rem);
+}
+
+.bg-container {
+  background-color: var(--background-hex);
+}
+
+.fg-container {
+  background-color: var(--foreground-hex);
+  border-radius: 10px;
+}

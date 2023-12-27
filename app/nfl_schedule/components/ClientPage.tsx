@@ -6,65 +6,27 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Header from "../../components/Header";
 import LeftNavBar from "../../components/LeftNavBar";
 import CustomTable from "../../components/CustomTable";
+import DropdownSlicer from "@/app/components/DropdownSlicer";
+import ScheduleList from "./ScheduleList";
 
 import { getOffensiveStats_Join_Roster } from "@/app/lib/data/NFLVerseAPI";
-import groupAndSum from "@/app/lib/utils/helper";
-import { ScheduleHeadCell } from "@/app/lib/types/visualTypes";
-import { iSchedule } from "@/app/lib/types/databaseTypes";
+import { groupAndSum } from "@/app/lib/utils/helper";
+import { iGame, iTeamRecords } from "@/app/lib/types/databaseTypes";
+import styles from "./ClientPage.module.css";
 
-const headCells: ScheduleHeadCell[] = [
-  {
-    id: "season",
-    numeric: false,
-    disablePadding: false,
-    label: "Season",
-    width: 110,
-  },
-  {
-    id: "week",
-    numeric: false,
-    disablePadding: false,
-    label: "Week",
-    width: 50,
-  },
-  {
-    id: "date",
-    numeric: false,
-    disablePadding: false,
-    label: "Date",
-    width: 50,
-  },
-  {
-    id: "home_team",
-    numeric: false,
-    disablePadding: false,
-    label: "Home Team",
-    width: 120,
-  },
-  {
-    id: "home_score_total",
-    numeric: true,
-    disablePadding: false,
-    label: "Home Team Final Score",
-    width: 110,
-  },
-  {
-    id: "away_team",
-    numeric: false,
-    disablePadding: false,
-    label: "Away Team",
-    width: 120,
-  },
-  {
-    id: "away_score_total",
-    numeric: true,
-    disablePadding: false,
-    label: "Away Team Final Score",
-    width: 50,
-  },
-];
-
-export default function ClientPage({ data }: { data: Array<iSchedule> }) {
+export default function ClientPage({
+  data,
+  season_list,
+  week_list,
+  team_list,
+  team_records,
+}: {
+  data: Array<iGame>;
+  season_list: Array<string>;
+  week_list: Array<string>;
+  team_list: Array<string>;
+  team_records: iTeamRecords;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams()!;
@@ -72,13 +34,12 @@ export default function ClientPage({ data }: { data: Array<iSchedule> }) {
   const [mainContainerHeight, setMainContainerHeight] = useState(0);
 
   // if user changes team in header component, it's sent back to server to re-query new team's data
-  const updateTeam = (team: string | null) => {
-    if (team) router.push(pathname + "?" + createQueryString("team", team));
-  };
-
-  const updatePosition = (position: string | null) => {
-    if (position)
-      router.push(pathname + "?" + createQueryString("position", position));
+  const updateItem = (item_name: string, item: string | null) => {
+    if (typeof item === "string" && item) {
+      router.push(pathname + "?" + createQueryString(item_name, item));
+    } else if (item === null) {
+      router.push(pathname + "?" + createQueryString(item_name, ""));
+    }
   };
 
   const createQueryString = useCallback(
@@ -101,33 +62,42 @@ export default function ClientPage({ data }: { data: Array<iSchedule> }) {
   }, [mainContainer]);
 
   return (
-    <div className=" w-full h-full grid grid-cols-6 gap-4 bg-gray-800 p-4">
-      <LeftNavBar className="col-span-1"></LeftNavBar>
-      <main className="w-full h-full col-span-4 rounded-md">
-        <div
-          className="h-full flex flex-col border-2 border-red-900"
-          ref={mainContainer}
-        >
-          <Header
-            updateTeam={updateTeam}
-            updatePosition={updatePosition}
-            className="grow basis-2/12 m-4 bg-gray-300"
-          ></Header>
-          <div className="grow basis-8/12 m-4 bg-gray-300">
-            <CustomTable
+    <div
+      className={`${styles["bg-container"]} flex flex-column items-end h-full`}
+    >
+      <main className={`${styles["client-header"]} flex flex-row w-full`}>
+        <LeftNavBar className="w-1/5 m-4 mr-0">
+          <DropdownSlicer
+            options={season_list}
+            className="h-10 mt-4"
+            itemName="season"
+            updateItem={updateItem}
+          ></DropdownSlicer>
+
+          <DropdownSlicer
+            options={week_list}
+            className="h-10 mt-7"
+            itemName="week"
+            updateItem={updateItem}
+          ></DropdownSlicer>
+
+          <DropdownSlicer
+            options={team_list}
+            className=" h-10 mt-7"
+            itemName="team"
+            updateItem={updateItem}
+          ></DropdownSlicer>
+        </LeftNavBar>
+        <main className="w-3/5 h-full rounded-md">
+          <div className="m-4" ref={mainContainer}>
+            <ScheduleList
               data={data}
-              headCells={headCells}
-              sortBy={"week"}
-              sortByDirection={"asc"}
-              parentHeight={mainContainerHeight}
-            ></CustomTable>
+              team_records={team_records}
+            ></ScheduleList>
           </div>
-          <footer className="grow basis-2/12 m-4 bg-gray-300 ">footer</footer>
-        </div>
+        </main>
+        <aside className={`${styles["fg-container"]} w-1/5 my-4 mr-4`}></aside>
       </main>
-      <aside className="col-span-1 bg-gray-300 rounded-md border-2">
-        sidebar
-      </aside>
     </div>
   );
 }

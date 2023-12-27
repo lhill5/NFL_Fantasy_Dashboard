@@ -1,3 +1,5 @@
+import { iTeamRecords } from "../types/databaseTypes";
+import { filterType } from "../types/genericTypes";
 import { GET, POST } from "./dbAPI";
 import { buildQuery } from "./dbAPI";
 
@@ -80,12 +82,57 @@ function flattenSchedule(schedule: Array<any>) {
   return schedule_flattened;
 }
 
-export async function GET_Schedule(
-  filterObj: { [key: string]: string | number } = {}
-) {
+export async function GET_Schedule(filterObj: filterType = {}) {
+  filterObj["home_team_id"] = { value: 0, filterType: "neq" };
   const query = buildQuery("Schedule", filterObj);
   const data = await GET(query);
   return data;
+}
+
+export async function GET_Team_Records(filterObj: filterType = {}) {
+  filterObj["home_team_id"] = { value: 0, filterType: "neq" };
+  const query = buildQuery("Schedule", filterObj);
+  const data = await GET(query);
+
+  let teamRecords: iTeamRecords = {};
+
+  for (let game of data) {
+    let home_team = game.home_team;
+    let away_team = game.away_team;
+
+    let home_score = game.home_score_total;
+    let away_score = game.away_score_total;
+
+    if (home_score !== null && away_score !== null) {
+      let home_win = home_score > away_score ? 1 : 0;
+      let away_win = away_score > home_score ? 1 : 0;
+      let isTie = home_score === away_score ? 1 : 0;
+
+      let updateTeamRecord = (
+        team: string,
+        win: number,
+        loss: number,
+        tie: number
+      ) => {
+        if (team in teamRecords) {
+          const { won: wins, loss: losses, tied: ties } = teamRecords[team];
+
+          teamRecords[team] = {
+            won: wins + win,
+            loss: losses + loss,
+            tied: ties + tie,
+          };
+        } else {
+          teamRecords[team] = { won: win, loss: loss, tied: tie };
+        }
+      };
+
+      updateTeamRecord(home_team, home_win, home_win ? 0 : 1, isTie ? 1 : 0);
+      updateTeamRecord(away_team, away_win, away_win ? 0 : 1, isTie ? 1 : 0);
+    }
+  }
+
+  return teamRecords;
 }
 
 export async function POST_Schedule(season: string) {

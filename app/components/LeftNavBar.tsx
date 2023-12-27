@@ -1,33 +1,22 @@
 "use client";
 
-import React from "react";
+import React, { ReactNode } from "react";
 import Link from "next/link";
+import styles from "./LeftNavBar.module.css";
 
-export default function Sidebar({ className }: { className: string }) {
+export default function Sidebar({
+  className,
+  children,
+}: {
+  className: string;
+  children: ReactNode;
+}) {
   return (
-    <div className={className}>
-      <aside className="bg-gray-300 rounded-md text-black">
-        <div className="flex items-center justify-center">
-          <h3>NFL Fantasy App</h3>
-        </div>
-        <section className="flex flex-col justify-between h-1/4">
-          <Link href="/nfl_schedule" className="">
-            Schedule
-          </Link>
-          <Link href="/nfl_teams" className="">
-            Teams
-          </Link>
-          <Link href="/" className="">
-            Players
-          </Link>
-          <Link href="/" className="">
-            Fantasy Football
-          </Link>
-          <Link href="/" className="">
-            NFL Stats
-          </Link>
-        </section>
-      </aside>
+    <div
+      className={`${styles["background"]} ${className} rounded-md text-black`}
+    >
+      <main className="m-auto"></main>
+      {children}
     </div>
   );
 }

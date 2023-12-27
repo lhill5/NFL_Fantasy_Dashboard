@@ -47,6 +47,7 @@ interface EnhancedTableProps {
   order: Order;
   orderBy: string;
   headCells: HeadCell[];
+  visibleRows: T[];
 }
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -88,7 +89,9 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   return (
     <TableHead>
       <TableRow>
-        {0 ? <StyledTableCell>Headshot</StyledTableCell> : null}
+        {"Roster" in props.visibleRows[0] ? (
+          <StyledTableCell>Headshot</StyledTableCell>
+        ) : null}
         {props.headCells.map((headCell) => (
           <StyledTableCell
             key={headCell.id}
@@ -136,7 +139,15 @@ const EnhancedTable: React.FC<{
   sortBy: string;
   sortByDirection: Order;
   parentHeight: number;
-}> = ({ data, headCells, sortBy, sortByDirection, parentHeight }) => {
+  parentWidth: number;
+}> = ({
+  data,
+  headCells,
+  sortBy,
+  sortByDirection,
+  parentHeight,
+  parentWidth,
+}) => {
   const [page, setPage] = React.useState(0);
   const [order, setOrder] = React.useState<Order>(sortByDirection);
   const [orderBy, setOrderBy] = React.useState<keyof T>(sortBy);
@@ -162,19 +173,19 @@ const EnhancedTable: React.FC<{
   return (
     <div
       style={{
-        width: "100%",
-        height: "100%",
         overflow: "scroll",
+        margin: 0,
       }}
     >
       <Paper>
-        <TableContainer sx={{ maxHeight: parentHeight * 0.53 }}>
-          <Table stickyHeader aria-label="sticky table" id="player_table">
+        <TableContainer sx={{ maxHeight: parentHeight, maxWidth: parentWidth }}>
+          <Table stickyHeader id="player_table">
             <EnhancedTableHead
               order={order}
               orderBy={orderBy.toString()}
               onRequestSort={handleRequestSort}
               headCells={headCells}
+              visibleRows={visibleRows}
             ></EnhancedTableHead>
             <TableBody>
               {visibleRows.map((row, index) => {

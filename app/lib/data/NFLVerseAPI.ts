@@ -2,6 +2,7 @@ import { supabase } from "../database/connector";
 
 import { iRoster } from "../types/databaseTypes";
 import { iPlayerStats } from "../types/databaseTypes";
+import { filterType } from "../types/genericTypes";
 import { GET, POST, buildQuery, addFilterQuery } from "./dbAPI";
 
 export async function PY_GET_PlayerStats() {
@@ -36,9 +37,7 @@ export async function PY_GET_Roster() {
   }
 }
 
-export async function getRoster(
-  filterObj: { [key: string]: string | number } = {}
-) {
+export async function getRoster(filterObj: filterType = {}) {
   const query = buildQuery("Roster", filterObj);
   const res = await GET(query);
   return res;
@@ -53,16 +52,14 @@ export async function updateRoster() {
   }
 }
 
-export async function getOffensivePlayerStats(
-  filterObj: { [key: string]: string | number } = {}
-) {
+export async function getOffensivePlayerStats(filterObj: filterType = {}) {
   const query = buildQuery("Player_Stats_Offense", filterObj);
   const data = await GET(query);
   return data;
 }
 
 export async function getOffensiveStats_Join_Roster(
-  filterObj: { [key: string]: string | number } = {}
+  filterObj: filterType = {}
 ) {
   const query = supabase.from("Player_Stats_Offense").select(`
   *, 
